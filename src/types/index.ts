@@ -1,3 +1,4 @@
+import InterceptorManger from '../core/interceptor'
 export type Method =
   | 'get'
   | 'GET'
@@ -43,6 +44,11 @@ export interface AxiosError extends Error {
 }
 
 export interface Axios {
+  interceptors: {
+    request: InterceptorManger<AxiosRequestConfig>
+    response: InterceptorManger<AxiosResponse>
+  }
+
   request<T = any>(config: AxiosRequestConfig): AxiosPromise<T>
 
   get<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
@@ -64,4 +70,19 @@ export interface AxiosInstance extends Axios {
   <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
 
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+}
+
+export interface AxiosInterceptorManager<T> {
+  // 添加拦截器方法
+  use(resolved: ResolvedFn<T>, rejected?: RejectedFn): number
+  // 删除拦截器方法
+  eject(id: number): void
+}
+
+export interface ResolvedFn<T> {
+  (val: T): T | Promise<T>
+}
+
+export interface RejectedFn {
+  (error: any): any
 }
